@@ -1,94 +1,75 @@
 const express = require("express");
 const app = express();
-const bodyparser = require("body-parser");
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
-//Middleware to parse the json, url
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: false }));
+const productRoutes = require("./api/routes/products");
+const orderRoutes = require("./api/routes/orders");
 
-//local variable! Will be replaced with MongoDB
-const orders = [];
 
-/**
- * API : creating a New order
- * URI: /orders
- * Method: POST
- */
-// req- request object,  res-response object, use req.body , req.params to read
-app.post("/orders", (req, res) => {
-  const order = req.body;
-  if (order.food_name || order.customer_name || order.food_qty) {
-    orders.push({
-      ...order,
-      id: orders.length + 1,
-      date: Date.now().toString()
-    });
-    console.log();
-    res.status(201).json({
-      message: "Order created successfully"
-    });
-  } else {
-    res.status(401).json({
-      message: "Invalid Order creation"
-    });
+const dbConfig = require('./db.config.js');
+
+ //Connecting to the database
+ 
+mongoose.connect(dbConfig.url, {
+    useNewUrlParser: true
+}).then(() => {
+    console.log("Successfully connected to the database");    
+}).catch(err => {
+    console.log('Could not connect to the database.', err);
+    process.exit();
+});
+
+//mongoose.Promise = global.Promise;
+
+app.use(morgan("dev"));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+
+//CORS headers
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+    return res.status(200).json({});
   }
+  setTimeout(() => {
+    next();
+  },10000);
+    
 });
 
-/**
- * API : Retreive all orders
- * URI: /orders
- * Method: GET
- */
-
-app.get("/orders", (req, res) => {
-  res.status(200).send(orders);
+// Routes which should handle requests
+app.use("/products", productRoutes);
+app.use("/orders", orderRoutes);
+app.use("/", (req, res, next) => {
+  res.status(200).json({
+  message: "hi"
+});
 });
 
-/**
- * API : Update an order
- * URI: /orders/:id
- * Method: PATCH
- */
-app.patch("/orders/:id", (req, res) => {
-  const order_id = req.params.id;
-  const order_update = req.body;
-  console.log(req.body);
-  for (let order of orders) {
-    if (order.id == order_id) {
-      if (order_update.food_name != null || undefined)
-        order.food_name = order_update.food_name;
-      if (order_update.food_qty != null || undefined)
-        order.food_qty = order_update.food_qty;
-      if (order_update.customer_name != null || undefined)
-        order.customer_name = order_update.customer_name;
+app.use((req, res, next) => {
+  const error = new Error("Not found");
+  error.status = 404;
+  next(error);
+});
 
-      return res
-        .status(200)
-        .json({ message: "Updated Succesfully", data: order });
+app.use((error, req, res, next) => {
+  res.status(error.status || 500);
+  res.json({
+    error: {
+      message: error.message
     }
-  }
-
-  res.status(404).json({ message: "Invalid Order Id" });
+  });
 });
 
-/**
- * API : Deletes an order
- * URI: /orders/:id
- * Method: DELETE
- */
-app.delete("/orders/:id", (req, res) => {
-  const order_id = req.params.id;
 
-  for (let order of orders) {
-    if (order.id == order_id) {
-      orders.splice(orders.indexOf(order), 1);
-
-      return res.status(200).json({
-        message: "Deleted Successfully"
-      });
-    }
-  }
-  res.status(404).json({ message: "Invalid Order Id" });
-});
 
 module.exports = app;
