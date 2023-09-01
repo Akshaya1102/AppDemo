@@ -1,14 +1,13 @@
 const http = require('http');
-const hostname = '127.0.0.1'; 
-const port = 3000;
+const app = require('./app');
 
-//A server returning asimple Response! Will be replaced with app.js
-const server = http.createServer((req, res) => { 
-    res.statusCode = 200; 
-    res.setHeader('Content-Type', 'text/plain'); 
-    res.end('Hello, World!\n'); });
+//const hostname = '127.0.0.1'; 
+const port = process.env.PORT || 3000;
 
+//App.js contains the code to process the http request and send the response
+const server = http.createServer(app);
 
-server.listen(port, hostname, () => { 
-    console.log(`Server running at http://${hostname}:${port}/`); 
+server.listen(port, () => { 
+    console.log(`Server running at ${port}`); 
 });
+
