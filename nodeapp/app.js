@@ -1,10 +1,9 @@
 const express = require("express");
 const app = express();
-const bodyparser = require("body-parser");
 
 //Middleware to parse the json, url
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 //local variable! Will be replaced with MongoDB
 const orders = [];
