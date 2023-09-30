@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Post Data</title>
+</head>
+<body>
+  <input type="text" id="postDataInput" placeholder="Enter post data">
+  <button onclick="postData()">Submit</button>
+
+  <script>
+    function postData() {
+      const inputData = document.getElementById('postDataInput').value;
+
+      fetch('http://localhost:3000/post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data: inputData })
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
+    }
+  </script>
+</body>
+</html>
