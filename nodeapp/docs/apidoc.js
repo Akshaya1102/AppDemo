@@ -2,7 +2,7 @@ module.exports = {
     openapi: "3.0.3", // present supported openapi version
     info: {
         title: "Simple  API", // short title.
-        description: "A simple todos API", //  desc.
+        description: "Ecommerce APP", //  desc.
         version: "1.0.0", // version number
         contact: {
             name: "John doe", // your name
@@ -15,6 +15,7 @@ module.exports = {
             url: "http://localhost:3000/api", // url
             description: "Local server", // name
         },
+        
     ],
 
     tags: [
