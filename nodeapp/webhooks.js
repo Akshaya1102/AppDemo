@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-
+const path = require("path");
 const app = express();
 app.use(express.json());
 let postCount = 0;
@@ -16,6 +16,10 @@ app.use((req, res, next) => {
       return res.status(200).json({});
     }
         next();    
+  });
+
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
   });
 // API to handle the '/post' route
 app.post('/post', (req, res) => {
