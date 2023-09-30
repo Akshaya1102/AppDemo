@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Post Data</title>
 </head>
+
 <body>
   <input type="text" id="postDataInput" placeholder="Enter post data">
   <button onclick="postData()">Submit</button>
-
+  <p id="idA"></p>
+  <button onclick="getfacts()">GetFacts</button>
   <script>
     function postData() {
       const inputData = document.getElementById('postDataInput').value;
@@ -18,10 +21,27 @@
         },
         body: JSON.stringify({ data: inputData })
       })
-      .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(error => console.error(error));
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(error));
+    }
+
+    function getfacts() {
+
+      fetch("https://www.boredapi.com/api/activity")
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          document.getElementById("idA").textContent = data.activity;
+          console.log(data);
+        }
+        )
+        .catch(error => {
+          // handle the error
+        });
     }
   </script>
 </body>
+
 </html>
