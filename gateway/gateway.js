@@ -7,6 +7,7 @@ const PORT = 5600;
 const axios = require('axios');
 
 app.get('/orders', (req, res) => {
+ 
   axios.get('http://localhost:3000/orders')
     .then(response => {
       // Handle the response here
@@ -20,7 +21,12 @@ app.get('/orders', (req, res) => {
 });
 
 app.get('/products', (req, res) => {
-  axios.get('http://localhost:3000/products')
+  const token=req.headers.authorization;
+  const headers = {
+    'Authorization': token // Include 'Bearer ' before the token
+  };
+  console.log(headers);
+  axios.get('http://localhost:3000/products',{headers: headers})
     .then(response => {
       // Handle the response here
             res.send(response.data); // Send the data back to the client

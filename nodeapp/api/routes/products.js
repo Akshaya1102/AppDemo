@@ -1,32 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-
+const checkAuth = require('../middleware/check-auth');
 const Product = require("../models/product");
 
-/*router.get("/", (req, res, next) => {
-  Product.find()
-    .exec()
-    .then(docs => {
-      console.log(docs);
-      //   if (docs.length >= 0) {
-      res.status(200).json(docs);
-      //   } else {
-      //       res.status(404).json({
-      //           message: 'No entries found'
-      //       });
-      //   }
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({
-        error: err
-      });
-    });
-});*/
-router.get("/", async(req, res, next) => {
-  
- await Product.find()
+router.get("/", checkAuth, async(req, res, next) => {
+   await Product.find()
     .select("name price _id")
     .exec()
     .then(docs => {
@@ -44,14 +23,9 @@ router.get("/", async(req, res, next) => {
           };
         })
       };
-      //   if (docs.length >= 0) {
-        
+             
       res.status(200).json(response);
-      //   } else {
-      //       res.status(404).json({
-      //           message: 'No entries found'
-      //       });
-      //   }
+    
     })
     .catch(err => {
       console.log(err);
@@ -92,7 +66,7 @@ router.post("/", (req, res, next) => {
     });
 });
 
-router.get("/:productId", (req, res, next) => {
+router.get("/:productId", checkAuth,(req, res, next) => {
   const id = req.params.productId;
   Product.findById(id)
     .select('name price _id')
